@@ -1,6 +1,0 @@
-if SHIELD_KNOB_MACROPAD
-
-config ZMK_KEYBOARD_NAME
-    default "Knob Macropad"
-
-endif

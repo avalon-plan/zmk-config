@@ -1,7 +1,0 @@
-file_format: "1"
-id: knob_macropad
-name: knob_macropad
-type: shield
-requires: [seeed_xiao_nrf52840]
-features:
-  - keys

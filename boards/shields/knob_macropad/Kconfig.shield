@@ -1,2 +1,0 @@
-config SHIELD_KNOB_MACROPAD
-    def_bool $(shields_list_contains,knob_macropad)
