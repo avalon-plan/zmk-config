@@ -1,0 +1,144 @@
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/rgb.h>
+#include <dt-bindings/zmk/pointing.h>
+#include <dt-bindings/zmk/outputs.h>
+#include <input/processors.dtsi>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/ {
+    /* ---- 旋钮分层:第一层滚动 / 第二层音量 / 第三层翻页 ---- */
+    /* 把滚轮(WHEEL)事件映射成 Y 轴,好喂给 keybind 处理器 */
+    zip_wheel_to_y: zip_wheel_to_y {
+        compatible = "zmk,input-processor-code-mapper";
+        #input-processor-cells = <0>;
+        type = <INPUT_EV_REL>;
+        map = <INPUT_REL_WHEEL INPUT_REL_Y>;
+    };
+    /* 第二层:转动 = 音量加/减(bindings 顺序: 右 左 上 下) */
+    zip_kb_vol: zip_kb_vol {
+        compatible = "zmk,input-processor-keybind";
+        #input-processor-cells = <0>;
+        track_remainders;
+        bindings = <&none>, <&none>, <&kp C_VOL_UP>, <&kp C_VOL_DN>;
+        tick = <40>;        /* 一格对一下需在设备上调:值越大越钝 */
+        tap-ms = <10>;
+        wait-ms = <0>;
+    };
+    /* 第三层:转动 = PageUp/PageDown */
+    zip_kb_pg: zip_kb_pg {
+        compatible = "zmk,input-processor-keybind";
+        #input-processor-cells = <0>;
+        track_remainders;
+        bindings = <&none>, <&none>, <&kp PG_UP>, <&kp PG_DN>;
+        tick = <40>;
+        tap-ms = <10>;
+        wait-ms = <0>;
+    };
+
+    as5600_listener: as5600_listener {
+        compatible = "zmk,input-listener";
+        device = <&as5600>;
+        l0_scroll { layers = <0>; input-processors = <&zip_scroll_scaler (-1) 2>; };
+        l1_vol    { layers = <1>; input-processors = <&zip_wheel_to_y>, <&zip_kb_vol>; };
+        l2_pg     { layers = <2>; input-processors = <&zip_wheel_to_y>, <&zip_kb_pg>; };
+    };
+
+    behaviors {
+        /* 让带参数的 &bt 能塞进 hold-tap(沿用参考工程做法) */
+        bt_one_param: bt_one_param {
+            compatible = "zmk,behavior-macro-one-param";
+            wait-ms = <0>;
+            tap-ms = <0>;
+            #binding-cells = <1>;
+            bindings = <&macro_param_1to1>, <&bt MACRO_PLACEHOLDER 0>;
+        };
+        /* 蓝牙键:hold=清除当前配对, tap=切换到下一个设备 */
+        ht_bt: hold_tap_bt {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <400>;
+            bindings = <&bt_one_param>, <&bt_one_param>;
+        };
+    };
+
+    macros {
+        /* 切到第二层(蓝)并闪一下蓝 */
+        go_l1_blue: go_l1_blue {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&to 1>
+                , <&rgb_ug RGB_ON>
+                , <&rgb_ug RGB_COLOR_HSB(240,100,100)>
+                , <&macro_wait_time 250>
+                , <&rgb_ug RGB_OFF>
+                ;
+        };
+        /* 切到第三层(红)并闪一下红 */
+        go_l2_red: go_l2_red {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&to 2>
+                , <&rgb_ug RGB_ON>
+                , <&rgb_ug RGB_COLOR_HSB(0,100,100)>
+                , <&macro_wait_time 250>
+                , <&rgb_ug RGB_OFF>
+                ;
+        };
+        /* 回到第一层(绿)并闪一下绿 */
+        go_l0_green: go_l0_green {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <0>;
+            bindings
+                = <&to 0>
+                , <&rgb_ug RGB_ON>
+                , <&rgb_ug RGB_COLOR_HSB(120,100,100)>
+                , <&macro_wait_time 250>
+                , <&rgb_ug RGB_OFF>
+                ;
+        };
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+
+        /* 位置0 = 切层键, 位置1 = 蓝牙键 */
+
+        /* 第一层 (绿) = ZMK layer 0 */
+        layer_green {
+            display-name = "L1 Green";
+            bindings = <
+                &go_l1_blue
+                &ht_bt BT_CLR_CMD BT_NXT_CMD
+            >;
+        };
+
+        /* 第二层 (蓝) = ZMK layer 1 */
+        layer_blue {
+            display-name = "L2 Blue";
+            bindings = <
+                &go_l2_red
+                &trans
+            >;
+        };
+
+        /* 第三层 (红) = ZMK layer 2 */
+        layer_red {
+            display-name = "L3 Red";
+            bindings = <
+                &go_l0_green
+                &trans
+            >;
+        };
+    };
+};
