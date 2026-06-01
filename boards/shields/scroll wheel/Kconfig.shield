@@ -1,2 +1,0 @@
-config SHIELD_SCROLL_WHEEL
-	def_bool $(shields_list_contains,scroll_wheel)
