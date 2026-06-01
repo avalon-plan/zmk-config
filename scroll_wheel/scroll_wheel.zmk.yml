@@ -1,7 +1,0 @@
-file_format: "1"
-id: scroll_wheel
-name: scroll_wheel
-type: shield
-requires: [xiao_ble]                # 👈 必须与 build.yaml 保持绝对一致
-features:
-  - keys
