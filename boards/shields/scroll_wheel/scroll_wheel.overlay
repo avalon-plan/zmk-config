@@ -6,10 +6,10 @@
 
 /*
  * 引脚(XIAO/Super52840 焊盘):
- *   I2C  SDA=P0.04(D4)  SCL=P0.05(D5)  -> AS5600(滚动)
- *   SPI3 MOSI=P1.12(D7)                 -> WS2812B DIN
- *   按键 P0.02(D0)=切层键  P0.03(D1)=蓝牙键(都接 GND)
- *   复位 = 硬件 RST↔GND
+ * I2C  SDA=P0.04(D4)  SCL=P0.05(D5)  -> AS5600(滚动)
+ * SPI3 MOSI=P1.12(D7)                 -> WS2812B DIN
+ * 按键 P0.02(D0)=切层键  P0.03(D1)=蓝牙键(都接 GND)
+ * 复位 = 硬件 RST↔GND
  */
 
 &pinctrl {
@@ -93,4 +93,10 @@
             ;
     };
     /* AS5600 的监听器 + 分层输入处理器在 keymap 文件里 */
+
+    /* ⚙️ 方案 A 强行插入的虚拟外部电源控制（完美解决编译报错） */
+    ext-power {
+        compatible = "zmk,ext-power-generic";
+        control-gpios = <&gpio0 10 GPIO_ACTIVE_HIGH>; /* 挂载在不用的 P0.10(D6) 上 */
+    };
 };
