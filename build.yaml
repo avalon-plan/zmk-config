@@ -2,5 +2,5 @@
 include:
   # Super52840 = XIAO nRF52840 替代品(相同引脚 + XIAO Bootloader)
   - board: seeed_xiao_nrf52840
-    shield: knob_macropad
+    shield: scroll wheel
     cmake-args: -DCONFIG_ZMK_STUDIO=y   # 启用 ZMK Studio;调 AGC 时临时换成 zmk-usb-logging
