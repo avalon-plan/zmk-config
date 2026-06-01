@@ -1,0 +1,6 @@
+if SHIELD_SCROLL WHEEL
+
+config ZMK_KEYBOARD_NAME
+    default "scroll wheel"
+
+endif

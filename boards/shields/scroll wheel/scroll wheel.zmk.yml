@@ -1,0 +1,7 @@
+file_format: "1"
+id: scroll wheel
+name: scroll wheel
+type: shield
+requires: [seeed_xiao_nrf52840]
+features:
+  - keys
