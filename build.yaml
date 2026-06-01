@@ -1,6 +1,5 @@
----
 include:
-  # Super52840 = XIAO nRF52840 替代品(相同引脚 + XIAO Bootloader)
-  - board: seeed_xiao_nrf52840
+  - board: xiao_ble                  # Super52840 = XIAO nRF52840 替代品(相同引脚 + XIAO Bootloader)
     shield: scroll_wheel
-    cmake-args: -DCONFIG_ZMK_STUDIO=y   # 启用 ZMK Studio;调 AGC 时临时换成 zmk-usb-logging
+    cmake-args: -DCONFIG_ZMK_STUDIO=y      # 启用 ZMK Studio;调 AGC 时临时换成 zmk-usb-logging
+    artifact-name: scroll_wheel_with_studio
